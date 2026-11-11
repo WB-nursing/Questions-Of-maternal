@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان نسا وتوليد - معهد شربين</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #fff;
+            --primary-color: #d81b60;
+            --primary-hover: #ad1457;
+            --correct-color: #4caf50;
+            --wrong-color: #f44336;
+            --btn-bg: #fce4ec;
+            --btn-text: #880e4f;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --primary-color: #f06292;
+            --primary-hover: #e91e63;
+            --btn-bg: #333;
+            --btn-text: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d81b60, #880e4f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #welcome-screen h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+            padding: 20px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header h2 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-btn:hover {
+            filter: brightness(0.9);
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        body.dark-mode .question-info {
+            color: #aaa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        body.dark-mode .progress-bar {
+            background-color: #444;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .arabic-translation {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: none;
+            background-color: var(--btn-bg);
+            padding: 10px;
+            border-radius: 8px;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background-color: var(--card-bg);
+            border: 2px solid var(--btn-bg);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-align: right;
+        }
+
+        .option:hover {
+            border-color: var(--primary-color);
+            background-color: var(--btn-bg);
+        }
+
+        .option.correct {
+            background-color: var(--correct-color) !important;
+            color: white;
+            border-color: var(--correct-color);
+        }
+
+        .option.wrong {
+            background-color: var(--wrong-color) !important;
+            color: white;
+            border-color: var(--wrong-color);
+        }
+
+        .option:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        #next-btn {
+            display: none;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        #next-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        #result-screen {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #result-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        #result-screen p {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0%, var(--btn-bg) 0%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .restart-btn {
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .header h2 { font-size: 1.1rem; }
+            .question-text { font-size: 1.1rem; }
+            #welcome-screen h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1>أهلا بطلاب معهد تمريض شربين 👋</h1>
+    </div>
+
+    <div class="container" id="quiz-container">
+        <div class="header">
+            <h2>حل الاسئله بتاع تحديد الميد تيرم لماده نسا وتوليد نظري</h2>
+            <div class="controls">
+                <button class="control-btn" id="theme-toggle" onclick="toggleDarkMode()">🌙 الوضع الداكن</button>
+            </div>
+        </div>
+
+        <div class="question-info">
+            <span id="question-counter">جاري التحميل...</span>
+            <span id="score-display">الدرجة: 0</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div id="quiz-content">
+            <div class="question-text" id="question-text"></div>
+            
+            <div class="arabic-translation" id="arabic-translation"></div>
+
+            <div class="action-buttons">
+                <button class="control-btn" onclick="toggleTranslation()">🇪🇬 ترجمة السؤال</button>
+                <button class="control-btn" onclick="speakQuestion()">🔊 قراءة بالإنجليزي</button>
+            </div>
+
+            <div class="options" id="options-container">
+            </div>
+
+            <button id="next-btn" onclick="nextQuestion()">السؤال التالي ➡️</button>
+        </div>
+
+        <div id="result-screen">
+            <h2>النتيجة النهائية</h2>
+            <div class="score-circle" id="final-score-circle">0%</div>
+            <p id="final-score-text">0 / 0</p>
+            <h3 id="final-message" style="margin-top: 20px; font-size: 1.5rem;"></h3>
+            <button class="restart-btn" onclick="location.reload()">إعادة الامتحان 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // قائمة الأسئلة كاملة (94 سؤال) 
+        const questions = [
+            { en: "What is the function of the Bartholin glands?", ar: "ما هي وظيفة غدد بارثولين؟", options: ["Menstrual flow discharge", "Vaginal lubrication", "Hormone production", "Fetal nourishment"], correct: 1 },
+            { en: "What is the most common shape of the hymen?", ar: "ما هو الشكل الأكثر شيوعاً لغشاء البكارة؟", options: ["Imperforate", "Septate", "Annular / half-moon", "Cribriform"], correct: 2 },
+            { en: "What is the normal pH of the vagina?", ar: "ما هو الأس الهيدروجيني الطبيعي للمهبل؟", options: ["Alkaline pH 7.5", "Neutral pH 7.0", "Acidic pH 4.5", "Acidic pH 2.0"], correct: 2 },
+            { en: "What is the function of the vaginal rugae (folds)?", ar: "ما هي وظيفة طيات المهبل؟", options: ["Produce mucus", "Allow the vagina to stretch during childbirth", "Maintain acidic pH", "Prevent infection"], correct: 1 },
+            { en: "What is the approximate length of the vagina?", ar: "ما هو الطول التقريبي للمهبل؟", options: ["4 to 6 cm", "8 to 10 cm", "12 to 14 cm", "15 to 20 cm"], correct: 1 },
+            { en: "What is the approximate length of the cervix?", ar: "ما هو الطول التقريبي لعنق الرحم؟", options: ["1 to 2 cm", "2.5 to 3 cm", "4 to 5 cm", "7 to 8 cm"], correct: 1 },
+            { en: "What is the normal weight of the non-pregnant uterus?", ar: "ما هو الوزن الطبيعي للرحم غير الحامل؟", options: ["10 - 20 gm", "50 - 70 gm", "100 - 150 gm", "200 - 300 gm"], correct: 1 },
+            { en: "What is the normal position of the uterus?", ar: "ما هو الوضع الطبيعي للرحم؟", options: ["Retroverted & Retroflexed", "Anteverted & Anteflexed", "Laterally deviated", "Midline only"], correct: 1 },
+            { en: "What are the dimensions of the uterus?", ar: "ما هي إبعاد الرحم؟", options: ["5 x 3 x 1 cm", "7.5 x 5 x 2.5 cm", "10 x 6 x 4 cm", "12 x 8 x 5 cm"], correct: 1 },
+            { en: "What is the length of the fallopian tube?", ar: "ما هو طول قناة فالوب؟", options: ["4 to 6 cm", "8 to 14 cm", "15 to 20 cm", "2 to 3 cm"], correct: 1 },
+            { en: "What is the main function of the fallopian tubes?", ar: "ما هي الوظيفة الرئيسية لقناتي فالوب؟", options: ["Implantation of the ovum", "Site of fertilization", "Menstrual flow", "Hormone production"], correct: 1 },
+            { en: "What are the dimensions of the ovary?", ar: "ما هي إبعاد المبيض؟", options: ["1.5 x 2.5 x 3.5 cm", "3.5 x 5 x 7.5 cm", "2 x 2 x 2 cm", "5 x 5 x 5 cm"], correct: 0 },
+            { en: "Which hormones are secreted by the ovaries?", ar: "ما هي الهرمونات التي يفرزها المبيضان؟", options: ["Insulin and glucagon", "Estrogen and progesterone", "FSH and LH", "Prolactin and oxytocin"], correct: 1 },
+            { en: "The female bony pelvis is composed of:", ar: "يتكون الحوض العظمي الأنثوي من:", options: ["Two hip bones, one sacrum, and coccyx", "Two sacrum, one hip bone", "One hip bone, one sacrum", "Two hip bones, two sacrums"], correct: 0 },
+            { en: "Which type of pelvis is considered the normal female pelvis?", ar: "أي نوع من الحوض يعتبر الحوض الأنثوي الطبيعي؟", options: ["Android", "Anthropoid", "Gynecoid", "Platypelloid"], correct: 2 },
+            { en: "Which type of pelvis has a heart-shaped outlet?", ar: "أي نوع من الحوض له مخرج على شكل قلب؟", options: ["Gynecoid", "Android", "Anthropoid", "Platypelloid"], correct: 1 },
+            { en: "Which type of pelvis has an oval shape?", ar: "أي نوع من الحوض له شكل بيضاوي؟", options: ["Gynecoid", "Android", "Anthropoid", "Platypelloid"], correct: 2 },
+            { en: "Which type of pelvis is described as flat and kidney-shaped?", ar: "أي نوع من الحوض يوصف بأنه مسطح وشكله كلوي؟", options: ["Gynecoid", "Android", "Anthropoid", "Platypelloid"], correct: 3 },
+            { en: "What is the function of the pelvic floor muscles during coughing?", ar: "ما هي وظيفة عضلات قاع الحوض أثناء السعال؟", options: ["Relax completely", "Reflex activity (act quickly)", "Cause prolapse", "Prevent urination"], correct: 1 },
+            { en: "Which of the following is a function of the pelvic floor muscles?", ar: "أي مما يلي يعتبر وظيفة لعضلات قاع الحوض؟", options: ["Prevent prolapse of pelvic organs", "Produce estrogen", "Initiate labor", "Form the hymen"], correct: 0 },
+            { en: "What is the anatomical location of the vagina?", ar: "ما هو الموقع التشريحي للمهبل؟", options: ["Between rectum anteriorly and bladder posteriorly", "Between bladder anteriorly and rectum posteriorly", "Below the symphysis pubis", "Behind the sacrum"], correct: 1 },
+            { en: "What is the shape of the uterus?", ar: "ما هو شكل الرحم؟", options: ["Almond-shaped", "Hollow pear-shaped muscular organ", "Heart-shaped", "Kidney-shaped"], correct: 1 },
+            { en: "Where are the Bartholin glands located?", ar: "أين تقع غدد بارثولين؟", options: ["Lower right and left portions of the vaginal opening", "Inside the uterus", "On the ovaries", "At the cervix"], correct: 0 },
+            { en: "What is the function of the cervix?", ar: "ما هي وظيفة عنق الرحم؟", options: ["Produce ova", "Acts as a passage between the vagina and uterus", "Secrete progesterone", "Site of fertilization"], correct: 1 },
+            
+            // الأسئلة من 25 إلى 36 (تمت إضافتها حديثاً)
+            { en: "What is the collective name for the external female reproductive organs?", ar: "ما هو الاسم الجماعي للأعضاء التناسلية الأنثوية الخارجية؟", options: ["Vulva", "Vagina", "Uterus", "Perineum"], correct: 0 },
+            { en: "What does the Mons Pubis overlie?", ar: "ما هو العضو الذي يغطي عظمة الارتفاق العاني؟", options: ["The anus", "The symphysis pubis", "The clitoris", "The cervix"], correct: 1 },
+            { en: "An imperforate hymen is characterized by:", ar: "يتميز غشاء البكارة المصمت بـ:", options: ["Two small openings", "Complete covering of the opening, preventing menstrual flow", "A band of extra tissue", "Being completely absent"], correct: 1 },
+            { en: "Why does an imperforate hymen cause abdominal or back pain?", ar: "لماذا يسبب غشاء البكارة المصمت ألماً في البطن أو الظهر؟", options: ["Due to hormonal imbalance", "Because blood backs up into the vagina and abdomen", "Because it causes severe infection", "Due to early pregnancy"], correct: 1 },
+            { en: "What is the approximate length of the perineum?", ar: "ما هو الطول التقريبي للعجان؟", options: ["1 to 2 cm", "2 to 5 cm", "5 to 8 cm", "8 to 10 cm"], correct: 1 },
+            { en: "The perineum extends from the fourchette anteriorly to:", ar: "يمتد العجان من الشوكة الأمامية إلى:", options: ["Clitoris", "Urethra", "Anus posteriorly", "Symphysis pubis"], correct: 2 },
+            { en: "Which of the following is a function of the external genital organs?", ar: "أي مما يلي يعتبر وظيفة للأعضاء التناسلية الخارجية؟", options: ["Producing ova", "Protecting internal genital organs from infectious organisms", "Secreting progesterone", "Site of fertilization"], correct: 1 },
+            { en: "A septate hymen is characterized by:", ar: "يتميز غشاء البكارة الحاجزي بـ:", options: ["A complete covering", "Two small openings instead of one", "A very small opening", "Being completely normal"], correct: 1 },
+            { en: "A microperforate hymen is described as:", ar: "يوصف غشاء البكارة المثقب الدقيق بأنه:", options: ["Completely covering the opening", "Almost completely covering the opening, but some blood can flow", "Having two openings", "Missing entirely"], correct: 1 },
+            { en: "What type of tissue is the perineum composed of?", ar: "من أي نوع من الأنسجة يتكون العجان؟", options: ["Nervous tissue only", "Fibrous and muscular tissues", "Epithelial tissue only", "Cartilage"], correct: 1 },
+            { en: "Which of the following is NOT an internal female structure?", ar: "أي مما يلي لا يعتبر من الأعضاء التناسلية الداخلية؟", options: ["Cervix", "Uterus", "Clitoris", "Fallopian tubes"], correct: 2 },
+            { en: "The Mons Pubis (Mons veneris) is composed of:", ar: "يتكون جبل العانة من:", options: ["A mass of fatty tissue covered by skin and hair", "Fibrous and muscular tissue", "Elastic cartilage", "Bony tissue"], correct: 0 },
+
+            // باقي الأسئلة من 37 إلى 94
+            { en: "The labia majora extend from the mons pubis to the:", ar: "تمتد الشفاه الكبرى من جبل العانة إلى:", options: ["Clitoris", "Perineum", "Anus", "Urethra"], correct: 1 },
+            { en: "Which of the following is a function of the labia majora?", ar: "أي مما يلي يعتبر وظيفة للشفاه الكبرى؟", options: ["Producing ova", "Protecting the inner structures and openings", "Secreting progesterone", "Sensory function"], correct: 1 },
+            { en: "Why do the labia minora have a distinct color?", ar: "لماذا يكون لون الشفاه الصغرى مميزاً؟", options: ["Due to a rich supply of blood vessels", "Due to the presence of hair", "Due to fat accumulation", "Due to sebaceous glands"], correct: 0 },
+            { en: "The labia minora surround the openings to the:", ar: "تحيط الشفاه الصغرى بفتحات:", options: ["Uterus and cervix", "Vagina and urethra", "Anus and rectum", "Fallopian tubes"], correct: 1 },
+            { en: "The clitoris is considered the anatomical counterpart of the:", ar: "يعتبر البظر مكافئاً تشريحياً لـ:", options: ["Uterus", "Male counterpart structure", "Scrotum", "Prostate"], correct: 1 },
+            { en: "The clitoris is a sensory structure located between the:", ar: "البظر تركيب حسي يقع بين:", options: ["Outer folds", "Inner folds at their upper end", "Symphysis pubis and anus", "Urethra and vagina"], correct: 1 },
+            { en: "The clitoris is attached to the symphysis pubis by:", ar: "يرتبط البظر بالارتفاق العاني بواسطة:", options: ["A suspensory ligament", "A muscular layer", "A fibrous band", "Elastic cartilage"], correct: 0 },
+            { en: "What is the main function of the clitoris?", ar: "ما هي الوظيفة الرئيسية للبظر؟", options: ["Menstrual flow", "Sensory function", "Site of fertilization", "Protecting internal organs"], correct: 1 },
+            { en: "The vestibule is an oval-shaped area formed between the labia minora, clitoris, and:", ar: "الدهليز هو منطقة بيضاوية الشكل تتكون بين:", options: ["Anus", "Fourchette", "Uterus", "Sacrum"], correct: 1 },
+            { en: "Which of the following structures is NOT contained within the vestibule?", ar: "أي من الهياكل التالية لا يوجد داخل الدهليز؟", options: ["External urethral meatus", "Vaginal introitus", "Skene's glands", "Ovary"], correct: 3 },
+            { en: "The labia majora contain which type of glands that produce lubricating secretions?", ar: "تحتوي الشفاه الكبرى على أي نوع من الغدد؟", options: ["Sweat and sebaceous glands", "Bartholin's glands only", "Endocrine glands", "Mammary glands"], correct: 0 },
+            { en: "The vestibule contains Skene's glands and:", ar: "يحتوي الدهليز على غدد سكين و:", options: ["Bartholin's glands", "Adrenal glands", "Thyroid glands", "Pituitary glands"], correct: 0 },
+            { en: "When does the embryonic stage start and end?", ar: "متى تبدأ وتنتهي المرحلة الجنينية المبكرة؟", options: ["Begins at fertilization, ends at week 2", "Begins at end of week 2, ends at week 8", "Begins at week 9, ends at birth", "Begins at week 4, ends at week 12"], correct: 1 },
+            { en: "Where does conception usually occur?", ar: "أين يحدث التلقيح عادةً؟", options: ["In the uterus", "In the cervix", "In the ampulla of the fallopian tube", "In the ovary"], correct: 2 },
+            { en: "What is the viability time of the ovum after release?", ar: "ما هي مدة صلاحية البويضة؟", options: ["12 to 24 hours", "24 to 48 hours", "48 to 72 hours", "72 to 96 hours"], correct: 1 },
+            { en: "Why do millions of reproductive cells try to fertilize the ovum?", ar: "لماذا تحاول ملايين الخلايا التكاثرية تخصيب البويضة؟", options: ["To provide enzymes to soften the outer layer", "To increase the chance of twins", "To provide nutrients", "To prevent implantation"], correct: 0 },
+            { en: "What is the cell mass called at day 3 after fertilization?", ar: "ماذا تسمى كتلة الخلايا في اليوم الثالث؟", options: ["Zygote", "Morula", "Blastocyst", "Embryo"], correct: 1 },
+            { en: "At what day does the blastocyst implant in the endometrium?", ar: "في أي يوم تنغرس الكيسة الأريمية؟", options: ["Day 3", "Day 5", "Day 6", "Day 10"], correct: 2 },
+            { en: "What is the function of hCG produced by the blastocyst?", ar: "ما هي وظيفة هرمون hCG؟", options: ["Maintains the corpus luteum to produce progesterone", "Causes uterine contractions", "Stimulates ovulation", "Reduces blood volume"], correct: 0 },
+            { en: "Which germ layer develops into the nervous system?", ar: "أي طبقة جرثومية تتكون منها الأعصاب؟", options: ["Ectoderm", "Mesoderm", "Endoderm", "Trophoblast"], correct: 0 },
+            { en: "Which structure contains two arteries and one vein?", ar: "أي هيكل يحتوي على شريانين ووريد واحد؟", options: ["Placenta", "Umbilical cord", "Amniotic sac", "Decidua"], correct: 1 },
+            { en: "What is the function of Wharton's Jelly in the umbilical cord?", ar: "ما هي وظيفة جيلي وارتون؟", options: ["Prevents compression of the cord", "Transfers oxygen", "Produces hormones", "Protects the fetus from infection"], correct: 0 },
+            { en: "What is the normal total weight gain during pregnancy?", ar: "ما هو إجمالي زيادة الوزن الطبيعية؟", options: ["5-7 kg", "9-12 kg", "15-20 kg", "20-25 kg"], correct: 1 },
+            { en: "When is a woman most likely to get pregnant?", ar: "متى تكون المرأة أكثر عرضة للحمل؟", options: ["During menstruation", "Within a day of ovulation", "One week before menstruation", "During the luteal phase"], correct: 1 },
+            { en: "Which of the following is a Presumptive sign of pregnancy?", ar: "أي مما يلي علامة افتراضية للحمل؟", options: ["Fetal heart sounds", "Hegar's sign", "Amenorrhea", "Fetal movement felt by doctor"], correct: 2 },
+            { en: "A positive pregnancy test is considered which type of sign?", ar: "اختبار الحمل الإيجابي يعتبر أي نوع من العلامات؟", options: ["Presumptive", "Probable", "Positive", "Conclusive"], correct: 1 },
+            { en: "Visualizing the fetus by ultrasound is a:", ar: "رؤية الجنين بالموجات فوق الصوتية تعتبر:", options: ["Presumptive sign", "Probable sign", "Positive sign", "False sign"], correct: 2 },
+            { en: "What causes Chadwick's sign?", ar: "ما الذي يسبب علامة تشادويك؟", options: ["Increased venous dilatation due to progesterone", "Increased estrogen", "Mechanical pressure of the uterus", "Decreased blood flow"], correct: 0 },
+            { en: "Softening of the cervix is known as:", ar: "تليين عنق الرحم يُعرف باسم:", options: ["Chadwick's sign", "Goodell's sign", "Hegar's sign", "Ballottement"], correct: 1 },
+            { en: "What is the function of the Operculum?", ar: "ما هي وظيفة السدادة المخاطية؟", options: ["To nourish the fetus", "To act as a physical barrier against ascending organisms", "To produce hormones", "To initiate labor"], correct: 1 },
+            { en: "How much does the uterus weight increase during pregnancy?", ar: "كم يزداد وزن الرحم أثناء الحمل؟", options: ["From 10-20g to 100g", "From 50-70g to 1000g", "From 100-200g to 2000g", "It stays the same"], correct: 1 },
+            { en: "At what month does the uterus ascend out of the pelvis?", ar: "في أي شهر يصعد الرحم خارج الحوض؟", options: ["1st month", "2nd month", "4th month", "6th month"], correct: 2 },
+            { en: "Braxton Hicks contractions are described as:", ar: "تقلصات براكستون هيكس توصف بأنها:", options: ["Regular and painful", "Irregular and painless", "Regular and painless", "Irregular and painful"], correct: 1 },
+            { en: "Montgomery's tubercles appear at which week?", ar: "في أي أسبوع تظهر درنات مونتجمري؟", options: ["8 weeks", "12 weeks", "20 weeks", "36 weeks"], correct: 1 },
+            { en: "The normal vaginal secretions during pregnancy become:", ar: "الإفرازات المهبلية الطبيعية تصبح:", options: ["More acidic", "More alkaline", "Neutral", "Bloody"], correct: 0 },
+            { en: "Why does the shape of the uterus become round?", ar: "لماذا يصبح شكل الرحم مستديراً؟", options: ["Due to multiple pregnancies", "By mid-gestation", "Because of the placenta", "In the first month"], correct: 1 },
+            { en: "What is the cause of physiological anemia during pregnancy?", ar: "ما هو سبب الأنيميا الفسيولوجية؟", options: ["Decreased RBC production", "Hemodilution", "Iron deficiency", "Blood loss"], correct: 1 },
+            { en: "During which weeks does diastolic blood pressure decrease?", ar: "في أي أسابيع ينخفض ضغط الدم الانبساطي؟", options: ["1-10 weeks", "12-26 weeks", "28-36 weeks", "It never decreases"], correct: 1 },
+            { en: "Why is there a risk of venous thrombosis in pregnancy?", ar: "لماذا يوجد خطر جلطات الأوردة؟", options: ["Decreased coagulation", "Increased blood coagulability", "Decreased blood volume", "Increased heart rate"], correct: 1 },
+            { en: "Why does urinary frequency occur in the first trimester?", ar: "لماذا يحدث تكرار التبول في الثلث الأول؟", options: ["Enlarged uterus compressing the bladder", "Fetal head descending", "Increased kidney function", "Uterus rising out of pelvis"], correct: 0 },
+            { en: "Why does heartburn occur during late pregnancy?", ar: "لماذا تحدث حرقة المعدة في أواخر الحمل؟", options: ["Progesterone relaxes the cardiac sphincter + mechanical pressure", "Increased stomach motility", "Decreased stomach acid", "Increased estrogen"], correct: 0 },
+            { en: "What is the cause of Lordosis posture in pregnancy?", ar: "ما هو سبب وضعية الانحناء القطني؟", options: ["Weight of the uterus altering the center of gravity", "Relaxation of the symphysis pubis", "Increased blood volume", "Hypertension"], correct: 0 },
+            { en: "Pigmentation on the face during pregnancy is known as:", ar: "التصبغ في الوجه أثناء الحمل يُعرف باسم:", options: ["Linea nigra", "Striae gravidarum", "Chloasma", "Chadwick's sign"], correct: 2 },
+            { en: "What does Linea nigra refer to?", ar: "إلى ماذا يشير الخط الأسود؟", options: ["A dark line extending from above the umbilicus to the pubic hair", "Stretch marks", "Darkening of the nipples", "A line on the face"], correct: 0 },
+            { en: "Why does the respiratory rate increase in pregnancy?", ar: "لماذا يزداد معدل التنفس في الحمل؟", options: ["Decreased lung capacity", "To obtain higher amount of oxygen necessary", "Due to diaphragm descending", "Due to decreased progesterone"], correct: 1 },
+            { en: "How much does cardiac output increase during pregnancy?", ar: "كم يزداد النتاج القلبي؟", options: ["10%", "25%", "50%", "100%"], correct: 2 },
+            { en: "What is the function of amniotic fluid?", ar: "ما هي وظيفة السائل الأمنيوسي؟", options: ["Acts as a cushion to protect the fetus", "Transfers nutrients", "Produces hormones", "Prevents labor"], correct: 0 },
+            { en: "The placenta has an endocrine function by secreting which hormones?", ar: "المشيمة لها وظيفة صماء بإفراز أي هرمونات؟", options: ["Insulin and glucagon", "hCG, HPL, estrogen, and progesterone", "TSH and thyroxine", "Cortisol and aldosterone"], correct: 1 },
+            { en: "The uterus is composed of which of the following parts?", ar: "يتكون الرحم من أي من الأجزاء التالية؟", options: ["Fundus, Corpus, Isthmus, and Cervix", "Medulla and Cortex", "Ampulla, Isthmus, and Infundibulum", "Mons pubis and Labia"], correct: 0 },
+            { en: "Which structure in the ovary contains the ovarian follicles?", ar: "أي هيكل في المبيض يحتوي على الجريبات؟", options: ["Medulla", "Hilum", "Cortex", "Tunica albuginea"], correct: 2 },
+            { en: "One of the functions of the pelvic floor is maintaining continence. This means:", ar: "الحفاظ على التحكم يعني:", options: ["Acting as part of the urinary and anal sphincters", "Producing estrogen", "Initiating labor", "Forming the hymen"], correct: 0 },
+            { en: "How long is the reproductive cell viable after ejaculation?", ar: "كم تبلغ مدة حيوية الخلية التكاثرية؟", options: ["12 to 24 hours", "24 to 72 hours", "4 to 5 days", "1 hour only"], correct: 1 },
+            { en: "During the process, approximately how many reproductive cells are deposited in 3 ml of fluid?", ar: "كم عدد الخلايا التكاثرية في 3 مل؟", options: ["10-50 million", "100-200 million", "300-600 million", "1-2 billion"], correct: 2 },
+            { en: "If the egg is fertilized by a cell containing a Y chromosome, the baby will be:", ar: "إذا تم التخصيب بـ Y، سيكون الطفل:", options: ["Girl", "Boy", "Identical twin", "Fraternal twin"], correct: 1 },
+            { en: "Besides endocrine functions, the placenta acts as a:", ar: "بالإضافة للوظائف الصماء، تعمل المشيمة كـ:", options: ["Barrier to some harmful substances", "Source of amniotic fluid", "Filter for maternal blood", "Producer of maternal RBCs"], correct: 0 },
+            { en: "If nausea and vomiting (hyperemesis) persist after the 14th week, it:", ar: "إذا استمر القيء بعد الأسبوع 14:", options: ["Is considered normal", "Requires active treatment", "Will resolve on its own", "Indicates a male fetus"], correct: 1 },
+            { en: "What color do stretch marks (Striae gravidarum) fade to following delivery?", ar: "إلى أي لون تتحول علامات التمدد بعد الولادة؟", options: ["Dark brown", "Reddish-purple", "Silvery appearance", "Pure white"], correct: 2 },
+            { en: "During pregnancy, how much does the weight of each breast increase?", ar: "كم يزداد وزن كل ثدي؟", options: ["100 g", "500 g", "1 kg", "2 kg"], correct: 1 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let canAnswer = true;
+
+        // تحديث عدد الأسئلة في الواجهة بناءً على عددهم في المصفوفة
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('question-counter').innerText = `السؤال 1 من ${questions.length}`;
+            document.getElementById('final-score-text').innerText = `0 / ${questions.length}`;
+        });
+
+        setTimeout(() => {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                document.getElementById('quiz-container').style.display = 'block';
+                loadQuestion();
+            }, 1000);
+        }, 3000);
+
+        function loadQuestion() {
+            canAnswer = true;
+            const q = questions[currentQuestionIndex];
+            
+            document.getElementById('question-text').innerText = q.en;
+            document.getElementById('arabic-translation').innerText = q.ar;
+            document.getElementById('arabic-translation').style.display = 'none';
+            
+            document.getElementById('question-counter').innerText = `السؤال ${currentQuestionIndex + 1} من ${questions.length}`;
+            document.getElementById('score-display').innerText = `الدرجة: ${score}`;
+            
+            const progress = ((currentQuestionIndex) / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            document.getElementById('next-btn').style.display = 'none';
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const q = questions[currentQuestionIndex];
+            const allOptions = document.querySelectorAll('.option');
+            
+            allOptions.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === q.correct) {
+                btnElement.classList.add('correct');
+                score++;
+                playSound('correct');
+            } else {
+                btnElement.classList.add('wrong');
+                allOptions[q.correct].classList.add('correct');
+                playSound('wrong');
+            }
+
+            document.getElementById('score-display').innerText = `الدرجة: ${score}`;
+            document.getElementById('next-btn').style.display = 'block';
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                document.getElementById('next-btn').innerText = "عرض النتيجة 🏆";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            const circle = document.getElementById('final-score-circle');
+            circle.innerText = `${percentage}%`;
+            circle.style.background = `conic-gradient(var(--primary-color) ${percentage}%, var(--btn-bg) ${percentage}%)`;
+            
+            document.getElementById('final-score-text').innerText = `${score} من ${questions.length}`;
+            
+            const msgElement = document.getElementById('final-message');
+            if (percentage < 50) {
+                msgElement.innerText = "شيد حيلك يامستر 😅";
+                msgElement.style.color = "#f44336";
+            } else if (percentage >= 50 && percentage <= 80) {
+                msgElement.innerText = "شيد حيلك يامستر هانت محتاج تركزي شويه 💪";
+                msgElement.style.color = "#ff9800";
+            } else {
+                msgElement.innerText = "برافو عليك يامستر عقبال الميد تيرم 🎉";
+                msgElement.style.color = "#4caf50";
+            }
+        }
+
+        function toggleTranslation() {
+            const arDiv = document.getElementById('arabic-translation');
+            arDiv.style.display = (arDiv.style.display === 'none' || arDiv.style.display === '') ? 'block' : 'none';
+        }
+
+        function speakQuestion() {
+            window.speechSynthesis.cancel();
+            const text = questions[currentQuestionIndex].en;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playSound(type) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); 
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.4);
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('theme-toggle');
+            btn.innerText = document.body.classList.contains('dark-mode') ? '☀️ الوضع المضيء' : '🌙 الوضع الداكن';
+        }
+    </script>
+</body>
+</html>

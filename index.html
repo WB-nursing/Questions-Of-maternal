@@ -43,36 +43,150 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            overflow: hidden;
         }
 
+        /* ================= شاشة الترحيب (Animation) ================= */
         #welcome-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #d81b60, #880e4f);
+            background: radial-gradient(circle, #2a0845, #000000);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            transition: opacity 1s ease-in-out;
+            z-index: 2000;
+            transition: opacity 1s ease-in-out, transform 1s;
         }
 
-        #welcome-screen h1 {
-            color: white;
+        .glow-text {
+            color: #fff;
             font-size: 2.5rem;
             text-align: center;
-            animation: pulse 1.5s infinite;
+            font-weight: bold;
+            text-shadow: 
+                0 0 10px #fff, 
+                0 0 20px #fff, 
+                0 0 30px #e91e63, 
+                0 0 40px #e91e63, 
+                0 0 50px #e91e63, 
+                0 0 60px #e91e63, 
+                0 0 70px #e91e63;
+            animation: pulseGlow 1.5s infinite alternate;
             padding: 20px;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; }
         }
 
+        .loading-bar {
+            margin-top: 30px;
+            width: 200px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px #e91e63;
+        }
+
+        .loading-bar span {
+            display: block;
+            width: 0%;
+            height: 100%;
+            background: #e91e63;
+            box-shadow: 0 0 15px #e91e63;
+            animation: load 3s forwards;
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* ================= واجهة الاستقبال (Landing Page) ================= */
+        #landing-page {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            background: var(--bg-color);
+            z-index: 100;
+            transition: opacity 0.5s;
+            padding: 20px;
+        }
+
+        .landing-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(216, 27, 96, 0.3), 0 0 60px rgba(216, 27, 96, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            animation: floatCard 3s ease-in-out infinite;
+        }
+
+        @keyframes floatCard {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .landing-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #e91e63;
+        }
+
+        .landing-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(216, 27, 96, 0.4);
+        }
+
+        .landing-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #d81b60, #ff4081);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(216, 27, 96, 0.6);
+            animation: pulseBtn 2s infinite;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(216, 27, 96, 0.9);
+        }
+
+        @keyframes pulseBtn {
+            0% { box-shadow: 0 0 20px rgba(216, 27, 96, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(216, 27, 96, 1); }
+            100% { box-shadow: 0 0 20px rgba(216, 27, 96, 0.6); }
+        }
+
+        /* ================= الحاوية الرئيسية للأسئلة ================= */
         .container {
             background-color: var(--card-bg);
             border-radius: 15px;
@@ -82,6 +196,8 @@
             padding: 30px;
             display: none;
             animation: fadeIn 0.5s;
+            max-height: 95vh;
+            overflow-y: auto;
         }
 
         @keyframes fadeIn {
@@ -102,7 +218,7 @@
 
         .header h2 {
             color: var(--primary-color);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .controls {
@@ -290,16 +406,30 @@
         @media (max-width: 600px) {
             .header h2 { font-size: 1.1rem; }
             .question-text { font-size: 1.1rem; }
-            #welcome-screen h1 { font-size: 1.8rem; }
+            .glow-text { font-size: 1.8rem; }
+            .landing-title { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- 1. شاشة الترحيب (Animation) -->
     <div id="welcome-screen">
-        <h1>أهلا بطلاب معهد تمريض شربين 👋</h1>
+        <h1 class="glow-text">أهلا بطلاب معهد تمريض شربين 👋</h1>
+        <div class="loading-bar"><span></span></div>
     </div>
 
+    <!-- 2. واجهة الاستقبال (Landing Page) -->
+    <div id="landing-page">
+        <div class="landing-card">
+            <div class="landing-icon">🩺👶🏻</div>
+            <h1 class="landing-title">امتحان تحديد الميد تيرم</h1>
+            <h2 class="landing-subtitle">مادة: نسا وتوليد نظري</h2>
+            <button class="start-btn" onclick="startExam()">ابدأ الامتحان 🚀</button>
+        </div>
+    </div>
+
+    <!-- 3. الحاوية الرئيسية للأسئلة -->
     <div class="container" id="quiz-container">
         <div class="header">
             <h2>حل الاسئله بتاع تحديد الميد تيرم لماده نسا وتوليد نظري</h2>
@@ -368,8 +498,6 @@
             { en: "What is the shape of the uterus?", ar: "ما هو شكل الرحم؟", options: ["Almond-shaped", "Hollow pear-shaped muscular organ", "Heart-shaped", "Kidney-shaped"], correct: 1 },
             { en: "Where are the Bartholin glands located?", ar: "أين تقع غدد بارثولين؟", options: ["Lower right and left portions of the vaginal opening", "Inside the uterus", "On the ovaries", "At the cervix"], correct: 0 },
             { en: "What is the function of the cervix?", ar: "ما هي وظيفة عنق الرحم؟", options: ["Produce ova", "Acts as a passage between the vagina and uterus", "Secrete progesterone", "Site of fertilization"], correct: 1 },
-            
-            // الأسئلة من 25 إلى 36 (تمت إضافتها حديثاً)
             { en: "What is the collective name for the external female reproductive organs?", ar: "ما هو الاسم الجماعي للأعضاء التناسلية الأنثوية الخارجية؟", options: ["Vulva", "Vagina", "Uterus", "Perineum"], correct: 0 },
             { en: "What does the Mons Pubis overlie?", ar: "ما هو العضو الذي يغطي عظمة الارتفاق العاني؟", options: ["The anus", "The symphysis pubis", "The clitoris", "The cervix"], correct: 1 },
             { en: "An imperforate hymen is characterized by:", ar: "يتميز غشاء البكارة المصمت بـ:", options: ["Two small openings", "Complete covering of the opening, preventing menstrual flow", "A band of extra tissue", "Being completely absent"], correct: 1 },
@@ -382,8 +510,6 @@
             { en: "What type of tissue is the perineum composed of?", ar: "من أي نوع من الأنسجة يتكون العجان؟", options: ["Nervous tissue only", "Fibrous and muscular tissues", "Epithelial tissue only", "Cartilage"], correct: 1 },
             { en: "Which of the following is NOT an internal female structure?", ar: "أي مما يلي لا يعتبر من الأعضاء التناسلية الداخلية؟", options: ["Cervix", "Uterus", "Clitoris", "Fallopian tubes"], correct: 2 },
             { en: "The Mons Pubis (Mons veneris) is composed of:", ar: "يتكون جبل العانة من:", options: ["A mass of fatty tissue covered by skin and hair", "Fibrous and muscular tissue", "Elastic cartilage", "Bony tissue"], correct: 0 },
-
-            // باقي الأسئلة من 37 إلى 94
             { en: "The labia majora extend from the mons pubis to the:", ar: "تمتد الشفاه الكبرى من جبل العانة إلى:", options: ["Clitoris", "Perineum", "Anus", "Urethra"], correct: 1 },
             { en: "Which of the following is a function of the labia majora?", ar: "أي مما يلي يعتبر وظيفة للشفاه الكبرى؟", options: ["Producing ova", "Protecting the inner structures and openings", "Secreting progesterone", "Sensory function"], correct: 1 },
             { en: "Why do the labia minora have a distinct color?", ar: "لماذا يكون لون الشفاه الصغرى مميزاً؟", options: ["Due to a rich supply of blood vessels", "Due to the presence of hair", "Due to fat accumulation", "Due to sebaceous glands"], correct: 0 },
@@ -448,21 +574,32 @@
         let score = 0;
         let canAnswer = true;
 
-        // تحديث عدد الأسئلة في الواجهة بناءً على عددهم في المصفوفة
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('question-counter').innerText = `السؤال 1 من ${questions.length}`;
-            document.getElementById('final-score-text').innerText = `0 / ${questions.length}`;
-        });
-
+        // 1. إخفاء شاشة الترحيب بعد 3.5 ثانية (لإنهاء الأنميشن)
         setTimeout(() => {
             const welcomeScreen = document.getElementById('welcome-screen');
             welcomeScreen.style.opacity = '0';
+            welcomeScreen.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 welcomeScreen.style.display = 'none';
-                document.getElementById('quiz-container').style.display = 'block';
-                loadQuestion();
+                // إظهار واجهة الاستقبال
+                document.getElementById('landing-page').style.display = 'flex';
+                document.getElementById('landing-page').style.opacity = '1';
             }, 1000);
-        }, 3000);
+        }, 3500);
+
+        // 2. دالة بدء الامتحان (عند الضغط على الزرار)
+        function startExam() {
+            const landingPage = document.getElementById('landing-page');
+            landingPage.style.opacity = '0';
+            setTimeout(() => {
+                landingPage.style.display = 'none';
+                document.getElementById('quiz-container').style.display = 'block';
+                document.body.style.overflow = 'auto'; // للسماح بالتمرير
+                document.getElementById('question-counter').innerText = `السؤال 1 من ${questions.length}`;
+                document.getElementById('final-score-text').innerText = `0 / ${questions.length}`;
+                loadQuestion();
+            }, 500);
+        }
 
         function loadQuestion() {
             canAnswer = true;

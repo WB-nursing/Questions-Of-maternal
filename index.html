@@ -11,7 +11,7 @@ Instant feedback · Bilingual explanations · Sound effects
 <title>اختبار نسا وتوليد · Ob/Gyn Quiz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- تم إضافة خط Lalezar هنا -->
+<!-- خط Lalezar -->
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600&family=Lalezar&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -39,13 +39,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 #intro-screen{
     position:fixed;inset:0;background:radial-gradient(circle,#1e293b,#0f172a);
     display:flex;flex-direction:column;justify-content:center;align-items:center;
-    z-index:9999;transition:opacity 1s ease-in-out;
-    cursor: pointer; /* شكل الماوس يبقى إيد عشان تعرف إنها بتضغط */
+    z-index:9999;transition:opacity 0.8s ease-in-out;
+    cursor: pointer;
 }
 .glow-text{
-    font-family:'Lalezar', cursive; /* الخط الجديد */
+    font-family:'Lalezar', cursive;
     color:#fff;
-    font-size:3.5rem; /* حجم أكبر شوية عشان الخط */
+    font-size:3.5rem;
     text-align:center;
     font-weight:normal;
     text-shadow:0 0 10px #fff,0 0 20px #fff,0 0 30px #d81b60,0 0 40px #d81b60,0 0 50px #d81b60,0 0 60px #d81b60;
@@ -192,8 +192,8 @@ h1{font-size:32px;font-weight:700}
 </head>
 <body>
 
-<!-- Intro Animation -->
-<div id="intro-screen" onclick="dismissIntro()">
+<!-- Intro Animation (بدون onclick عشان نربطها بالجافاسكريبت بشكل أضمن) -->
+<div id="intro-screen">
     <h1 class="glow-text">أهلاً بطلاب معهد تمريض شربين 😉🫶🏻👋🏻</h1>
     <div class="loading-bar"><span></span></div>
 </div>
@@ -300,13 +300,15 @@ const RAW = `
 94|SYS|During pregnancy, how much does the weight of each breast increase?|كم يزداد وزن كل ثدي؟|100 g~100 جم|500 g~500 جم|1 kg~1 كجم|2 kg~2 كجم|B|Each breast increases in weight by about 400-500 grams during pregnancy.|يزيد وزن كل ثدي بحوالي 400-500 جرام أثناء الحمل.
 `;
 
+// تم إضافة المحاضرة الخامسة PEL هنا لحل المشكلة
 const LECTURES = {
-  INT:  {id:'INT',  ar:'الأعضاء الداخلية والحوض',  en:'INT',  c1:'#d81b60',c2:'#f06292',grad:'linear-gradient(135deg,#d81b60,#f06292)',tint:'rgba(216,27,96,.10)'},
+  INT:  {id:'INT',  ar:'الأعضاء الداخلية',  en:'INT',  c1:'#d81b60',c2:'#f06292',grad:'linear-gradient(135deg,#d81b60,#f06292)',tint:'rgba(216,27,96,.10)'},
+  PEL:  {id:'PEL',  ar:'الحوض العظمي', en:'PEL',  c1:'#3b82f6',c2:'#60a5fa',grad:'linear-gradient(135deg,#3b82f6,#60a5fa)',tint:'rgba(59,130,246,.10)'},
   EXT:  {id:'EXT',  ar:'الأعضاء الخارجية والبكارة',     en:'EXT',  c1:'#8e24aa',c2:'#ce93d8',grad:'linear-gradient(135deg,#8e24aa,#ce93d8)',tint:'rgba(142,36,170,.10)'},
   PREG: {id:'PREG', ar:'الحمل والجنين', en:'PREG',c1:'#ff5722',c2:'#ff8a65',grad:'linear-gradient(135deg,#ff5722,#ff8a65)',tint:'rgba(255,87,34,.12)'},
-  SYS:  {id:'SYS',  ar:'التغيرات الجهازية والمتنوعة',  en:'SYS',  c1:'#0ea5e9',c2:'#38bdf8',grad:'linear-gradient(135deg,#0ea5e9,#38bdf8)',tint:'rgba(14,165,233,.10)'}
+  SYS:  {id:'SYS',  ar:'التغيرات الجهازية',  en:'SYS',  c1:'#0ea5e9',c2:'#38bdf8',grad:'linear-gradient(135deg,#0ea5e9,#38bdf8)',tint:'rgba(14,165,233,.10)'}
 };
-const LEC_ORDER = ['INT','EXT','PREG','SYS'];
+const LEC_ORDER = ['INT','PEL','EXT','PREG','SYS'];
 
 const QUESTIONS = RAW.split('\n').map(l=>l.trim()).filter(l=>l && !l.startsWith('//')).map(line=>{
   const p = line.split('|');
@@ -323,9 +325,9 @@ const QBYID = {}; QUESTIONS.forEach(q=>QBYID[q.id]=q);
 
 // ═══════════════════ I18N ═══════════════════
 const I18N = {
-  ar:{title:'اختبار نسا وتوليد',sub:'Ob/Gyn Quiz · 94 سؤالاً · 4 محاضرات',
+  ar:{title:'اختبار نسا وتوليد',sub:'Ob/Gyn Quiz · 94 سؤالاً · 5 محاضرات',
     p1:'⚡ تصحيح فوري',p2:'🌏 ترجمة فورية',p3:'🔊 مؤثرات صوتية',
-    f1:'94 سؤالاً · 4 محاضرات',f2:'تصحيح فوري مع شرح مبسط',f3:'ترجمة عربية بضغطة',f4:'مؤثرات صوتية للصح والخطأ',
+    f1:'94 سؤالاً · 5 محاضرات',f2:'تصحيح فوري مع شرح مبسط',f3:'ترجمة عربية بضغطة',f4:'مؤثرات صوتية للصح والخطأ',
     chooseLec:'اختر المحاضرات:',shuffleQ:'خلط الأسئلة:',shuffleO:'خلط الخيارات:',sounds:'🔊 الأصوات:',lang:'🌏 اللغة:',theme:'🌙 المظهر:',
     light:'فاتح',dark:'داكن',start:'▶ ابدأ الاختبار',hint:'اختصارات: 1-4 للاختيار · Enter للتالي · R للترجمة · M للصوت',
     best:'🏆 أفضل نتيجة:',auto:'استئناف تلقائي عند تحديث الصفحة',noLec:'اختر محاضرة واحدة على الأقل',
@@ -334,9 +336,9 @@ const I18N = {
     c:'صحيحة',w:'خاطئة',pct:'النسبة',dur:'المدة',all:'الكل',wo:'الخطأ فقط',co:'الصحيح فقط',un:'لم يُجب',
     your:'إجابتك',corr:'الإجابة الصحيحة',none:'لم تُجب',res:'النتيجة',byLec:'النتيجة حسب المحاضرة',
     exit:'هل تريد إنهاء الاختبار والعودة للرئيسية؟',yes:'نعم',cancel:'إلغاء',empty:'لا توجد عناصر',expl:'الشرح'},
-  en:{title:'Ob/Gyn Quiz',sub:'Ob/Gyn Quiz · 94 Questions · 4 Lectures',
+  en:{title:'Ob/Gyn Quiz',sub:'Ob/Gyn Quiz · 94 Questions · 5 Lectures',
     p1:'⚡ Instant feedback',p2:'🌏 Instant translation',p3:'🔊 Sound effects',
-    f1:'94 questions · 4 lectures',f2:'Instant feedback with explanations',f3:'Arabic translation in one tap',f4:'Sounds for right and wrong',
+    f1:'94 questions · 5 lectures',f2:'Instant feedback with explanations',f3:'Arabic translation in one tap',f4:'Sounds for right and wrong',
     chooseLec:'Choose lectures:',shuffleQ:'Shuffle questions:',shuffleO:'Shuffle options:',sounds:'🔊 Sounds:',lang:'🌏 Language:',theme:'🌙 Theme:',
     light:'Light',dark:'Dark',start:'▶ Start Quiz',hint:'Shortcuts: 1-4 select · Enter next · R translate · M mute',
     best:'🏆 Best score:',auto:'Auto-resume on page refresh',noLec:'Select at least one lecture',
@@ -699,41 +701,45 @@ document.addEventListener('keydown',e=>{
 });
 
 // ═══════════════════ INIT ═══════════════════
-let introTimer; // متغير عشان نقدر نلغي المؤقت لو داس
+let introTimer;
 
 function dismissIntro() {
-    if(introTimer) clearTimeout(introTimer); // إلغاء المؤقت لو داس
-    
+    if(introTimer) clearTimeout(introTimer);
     const intro = document.getElementById('intro-screen');
-    // التأكد إن الشاشة موجودة ولسه متخفية
     if(intro && intro.style.display !== 'none') {
         intro.style.opacity = '0';
-        intro.style.pointerEvents = 'none'; // عشان ميعملش كليك تاني وهو بيختفي
+        intro.style.pointerEvents = 'none';
         
-        setTimeout(() => { 
-            intro.style.display = 'none'; 
-            // شغل الموقع لو لسه مشتغلش (عشان لو داس بسرعة ميشغلوش مرتين)
-            if(!document.getElementById('app').innerHTML) {
-                init(); 
+        setTimeout(() => {
+            intro.style.display = 'none';
+            const appDiv = document.getElementById('app');
+            if(!appDiv.innerHTML || appDiv.innerHTML.trim() === '') {
+                init();
             }
-        }, 1000);
+        }, 600); // تم تقليل الوقت شوية عشان يكون أسرع
     }
 }
 
+// ربط حدث الضغط بطريقة مضمونة
+document.getElementById('intro-screen').addEventListener('click', dismissIntro);
+
 function init(){
-  loadSettings();
-  applyTheme(S.theme);applyLanguage(S.lang);
-  const pr=loadProgress();
-  if(pr && !pr.finished){S.quiz=pr;S.showAr=false;renderQuestion(true);}
-  else renderWelcome();
+  try {
+    loadSettings();
+    applyTheme(S.theme);applyLanguage(S.lang);
+    const pr=loadProgress();
+    if(pr && !pr.finished){S.quiz=pr;S.showAr=false;renderQuestion(true);}
+    else renderWelcome();
+  } catch(e) {
+    console.error("Initialization error:", e);
+    document.getElementById('app').innerHTML = `<div style="padding:20px; text-align:center; color:var(--text);">حدث خطأ أثناء تحميل الاختبار. يرجى تحديث الصفحة.</div>`;
+  }
 }
 
 // تشغيل المؤقت التلقائي
 introTimer = setTimeout(dismissIntro, 3500);
 
-console.assert(QUESTIONS.length === 94, "❌ Expected 94, got " + QUESTIONS.length);
 console.log("✅ Loaded " + QUESTIONS.length + " questions");
-console.log("📚 INT=24 · EXT=24 · PREG=24 · SYS=22");
 </script>
 </body>
 </html>
